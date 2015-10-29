@@ -13,7 +13,7 @@ import {
   CLEAR_COMPLETED
 } from '../constants/ActionTypes';
 
-const initialState = Immutable.List([new TodoRecord({
+const initialState: Immutable.List<TodoRecord> = Immutable.List([new TodoRecord({
   text: 'Use Redux with TypeScript',
   completed: false,
   id: 0

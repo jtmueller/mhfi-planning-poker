@@ -1,6 +1,6 @@
-export const ADD_TODO = 'ADD_TODO';
-export const DELETE_TODO = 'DELETE_TODO';
-export const EDIT_TODO = 'EDIT_TODO';
-export const COMPLETE_TODO = 'COMPLETE_TODO';
-export const COMPLETE_ALL = 'COMPLETE_ALL';
-export const CLEAR_COMPLETED = 'CLEAR_COMPLETED';
+export const CREATE_SESSION = 'CREATE_SESSION';
+export const REMOVE_SESSION = 'REMOVE_SESSION';
+export const SESSIONLIST_CHANGED = 'SESSIONLIST_CHANGED';
+export const SET_VOTE = 'SET_VOTE';
+export const CLEAR_VOTES = 'CLEAR_VOTES';
+export const USERS_CHANGED = 'USERS_CHANGED';

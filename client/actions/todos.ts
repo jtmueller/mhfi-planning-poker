@@ -1,5 +1,9 @@
 /// <reference path="../../typings/tsd.d.ts" />
 
+// TODO: React-Router + integration with redux?
+// https://github.com/rackt/redux/issues/291
+// http://rackt.org/redux/docs/advanced/AsyncActions.html
+
 import { createAction, Action } from 'redux-actions';
 
 import { Todo, IRecord } from '../models/todos';

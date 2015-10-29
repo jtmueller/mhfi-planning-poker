@@ -6,3 +6,5 @@
 /// <reference path="react-redux/react-redux.d.ts" />
 /// <reference path="immutable/immutable-overrides.d.ts" />
 /// <reference path="redux-actions/redux-actions.d.ts" />
+/// <reference path="assertion-error/assertion-error.d.ts" />
+/// <reference path="redux-thunk/redux-thunk.d.ts" />
