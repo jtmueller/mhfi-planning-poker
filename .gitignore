@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+npm-debug.log
+build/
+tmp/
+dist/
+.sw[a-z]
