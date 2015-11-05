@@ -26,7 +26,7 @@ const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const initialState = {
 };
 
-const store: Store = createStoreWithMiddleware(rootReducer, initialState);
+export const store: Store = createStoreWithMiddleware(rootReducer, initialState);
 
 React.render(
   <Provider store={store}>
