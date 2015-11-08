@@ -24,21 +24,23 @@ export interface Session {
 
 var defaultSession: Session = { 
   sessionId: '', name:'', desc:'',
-  users: Immutable.List([]), 
   lastUpdated: new Date()
 };
 /// Instantiating this constructor generates an immutable Session record wrapper.
 export const SessionRecord = Immutable.Record<Session>(defaultSession, "Session");
+export type SessionNames = Immutable.List<IRecord<{ sessionId:string, name:string }>>;
 
 export interface AppState {
   currentUser: IRecord<User>;
   currentSession: IRecord<Session>;
-  sessionNames: Immutable.List<IRecord<{ sessionId:string, name:string }>>;
+  sessionNames: SessionNames;
+  users: UserList;
 }
 var defaultAppState: AppState = {
   currentUser: new UserRecord(),
   currentSession: new SessionRecord(),
-  sessionNames: Immutable.List([])
+  sessionNames: Immutable.List([]),
+  users: Immutable.List([])
 };
 export const AppRecord = Immutable.Record<AppState>(defaultAppState, "App");
 

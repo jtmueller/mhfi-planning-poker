@@ -5,7 +5,6 @@
 // http://rackt.org/redux/docs/advanced/AsyncActions.html
 
 import { createAction, Action } from 'redux-actions';
-import thunk from 'redux-thunk';
 import * as Firebase from 'firebase';
 
 import { 
