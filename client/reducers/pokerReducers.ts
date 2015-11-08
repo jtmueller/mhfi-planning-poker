@@ -67,6 +67,12 @@ export default handleActions<AppState>({
   [UserAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
     return state.update('users', (users:UserList) =>
       users.merge(action.payload));
+  },
+  
+  [UserAction.Auth]: (state:IRecord<AppState>, action:Action) => {
+    const user: User = action.payload;
+    return state.update('currentUser', (curUser:IRecord<User>) =>
+      curUser.merge(user));
   }
   
 }, initialState);

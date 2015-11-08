@@ -38,9 +38,14 @@ dbRoot.authWithOAuthPopup('google', (error, authData) => {
   }
   else {
     console.log('Authenticated: ', authData);
+    let { displayName, profileImageURL } = authData[authData.provider];
     store.dispatch({
       type: UserAction.Auth,
-      payload: authData
+      payload: {
+        userId: authData.uid,
+        name: displayName,
+        avatarUrl: profileImageURL
+      }
     });
   }
 });

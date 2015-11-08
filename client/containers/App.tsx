@@ -7,32 +7,29 @@ import { Paper } from 'material-ui';
 
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
-import * as TodoActions from '../actions/todos';
-import { TodoList } from '../models/todos';
+import * as PokerActions from '../actions/pokerActions';
+import { IRecord, AppState } from '../models/pokerModels';
 
 interface AppProps {
-  todos?: TodoList;
+  state?: AppState;
   dispatch?: Redux.Dispatch;
 }
 
 class App extends React.Component<AppProps, any> {
   render() {
-    const { todos, dispatch } = this.props;
-    const actions = bindActionCreators(TodoActions, dispatch);
+    const { state, dispatch } = this.props;
+    const actions = bindActionCreators(PokerActions, dispatch);
 
     return (
       <Paper zDepth={1} style={{margin:50, padding:20}}>
-        <Header />
         <MainSection
-          todos={todos}
+          state={state}
           actions={actions}/>
       </Paper>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  todos: state.todos
-});
+const mapStateToProps = state => ({ state: state.state });
 
 export default connect(mapStateToProps)(App);

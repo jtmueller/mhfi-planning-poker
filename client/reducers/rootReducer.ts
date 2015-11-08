@@ -2,10 +2,10 @@
 
 import { combineReducers } from 'redux';
 
-import todos from './todos';
+import state from './pokerReducers';
 
 const rootReducer = combineReducers({
-  todos: todos
+  state: state
 });
 
 export { rootReducer };

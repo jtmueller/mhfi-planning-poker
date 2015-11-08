@@ -7,11 +7,15 @@ export type IRecord<T> = Immutable.Record.IRecord<T>
 export interface User {
   userId: string;
   name: string;
+  avatarUrl?: string;
   vote?: number;
 }
-
+const defaultUser: User = { 
+  userId: '', name: '', 
+  avatarUrl: '', vote: null 
+};
 /// Instantiating this constructor generates an immutable User record wrapper.
-export const UserRecord = Immutable.Record<User>({ userId:'', name:'' }, "User");
+export const UserRecord = Immutable.Record<User>(defaultUser, "User");
 export type UserList = Immutable.List<IRecord<User>>;
 
 export interface Session {
@@ -21,8 +25,7 @@ export interface Session {
   adminUser?: string;
   lastUpdated: Date;
 }
-
-var defaultSession: Session = { 
+const defaultSession: Session = { 
   sessionId: '', name:'', desc:'',
   lastUpdated: new Date()
 };
@@ -36,7 +39,7 @@ export interface AppState {
   sessionNames: SessionNames;
   users: UserList;
 }
-var defaultAppState: AppState = {
+const defaultAppState: AppState = {
   currentUser: new UserRecord(),
   currentSession: new SessionRecord(),
   sessionNames: Immutable.List([]),
