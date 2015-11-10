@@ -32,36 +32,6 @@ const dbRoot = new Firebase('https://mhfi-poker.firebaseio.com/');
 const sessions = dbRoot.child('sessions');
 const users = dbRoot.child('users');
 
-function handleAuth(authData) {
-  let { displayName, profileImageURL } = authData[authData.provider];
-  store.dispatch({
-    type: UserAction.Auth,
-    payload: {
-      userId: authData.uid,
-      name: displayName,
-      avatarUrl: profileImageURL
-    }
-  });
-}
-
-setTimeout(() => {
-  let auth = dbRoot.getAuth();
-  if (auth) {
-    handleAuth(auth);
-  }
-  else {
-    dbRoot.authWithOAuthPopup('google', (error, authData) => {
-      if (error) {
-        console.error('Authentication Error', error);
-      }
-      else {
-        //console.log('Authenticated: ', authData);
-        handleAuth(authData)
-      }
-    });
-  }
-}, 10);
-
 sessions.on('value', snapshot => {
   let value = snapshot.val();
   store.dispatch({
@@ -69,6 +39,37 @@ sessions.on('value', snapshot => {
     payload: value ? Object.keys(value).map(k => value[k]) : []
   });
 });
+
+const login = () =>
+  (dispatch:Dispatcher) => {
+    const handleAuth = (authData) => {
+      let { displayName, profileImageURL } = authData[authData.provider];
+      dispatch({
+        type: UserAction.Auth,
+        payload: {
+          userId: authData.uid,
+          name: displayName,
+          avatarUrl: profileImageURL
+        }
+      });
+    }
+    
+    let auth = dbRoot.getAuth();
+    if (auth) {
+      handleAuth(auth);
+    }
+    else {
+      dbRoot.authWithOAuthPopup('google', (error, authData) => {
+        if (error) {
+          console.error('Authentication Error', error);
+        }
+        else {
+          //console.log('Authenticated: ', authData);
+          handleAuth(authData)
+        }
+      });
+    }
+  }
 
 const editSession = createAction<Session>(
   SessionAction.Change,
@@ -178,6 +179,7 @@ const clearVotes = (sessionId: string, userId: string) =>
   };
 
 export {
+  login,
   addSession,
   editSession,
   removeSession,

@@ -95,9 +95,16 @@ class MainSection extends React.Component<MainSectionProps, any> {
 
   render() {
     const { currentUser, currentSession } = this.props.appState;
+    const { login } = this.props.actions;
     
-    if (!currentUser.userId)
-      return <Well>Please sign in.</Well>;
+    if (!currentUser.userId) {
+      return (
+        <Well>
+          Please sign in: &nbsp;
+          <Button bsStyle="danger" onClick={login}>Google</Button>
+        </Well>
+      );
+    }
       
     if (!currentSession.sessionId)
       return this.renderSessionSelect();
