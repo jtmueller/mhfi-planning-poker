@@ -20,8 +20,6 @@ import { Action } from 'redux-actions';
 import App from './containers/App';
 import { rootReducer } from './reducers/rootReducer';
 
-console.log(thunk);
-
 // create a store that has redux-thunk middleware enabled
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 

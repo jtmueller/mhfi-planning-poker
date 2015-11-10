@@ -29,7 +29,10 @@ export default handleActions<AppState>({
     const session: Session = action.payload;
     return state.withMutations(mutable => {
       mutable.update('sessionNames', (sns:SessionNames) => 
-        sns.map(sn => sn.merge(session)).toList());
+        sns.map(sn => 
+          sn.sessionId === session.sessionId
+            ? sn.merge(session) : sn
+        ).toList());
         
       if (state.currentSession.sessionId === session.sessionId) {
         mutable.update('currentSession', (curSession:IRecord<Session>) =>
@@ -45,28 +48,36 @@ export default handleActions<AppState>({
   },
   
   [SessionAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    return state.update('sessionNames', (sns:SessionNames) =>
-      sns.merge(action.payload));
+    //console.log(action);
+    const newSessions: Session[] = action.payload;
+    
+    // Immutable.List.merge goes by indexes, replaces items without regard to identity
+    // For now just replace all sessions instead, but may want to use more granular add/remove
+    // events from Firebase instead of 'value' for better performance.
+    return state.update('sessionNames', () => Immutable.List(newSessions.map(s => new SessionRecord(s))));
   },
   
   [SessionAction.Join]: (state:IRecord<AppState>, action:Action) => {
-    return state.update('currentSession', (curSession:IRecord<Session>) => {
-      curSession.merge(action.payload);
-    });
+    //console.log(action);
+    return state.update('currentSession', (curSession:IRecord<Session>) =>
+      curSession.merge(action.payload));
   },
   
   [SessionAction.Leave]: (state:IRecord<AppState>, action:Action) => {
-    return state.update('currentSession', (curSession:IRecord<Session>) => {
-      if (curSession.sessionId === action.payload) {
-        return new SessionRecord();
-      }
-      return curSession;
+    return state.withMutations(mutable => {
+      mutable.update('currentSession', () => new SessionRecord());
+      mutable.update('users', () => Immutable.List([]));
     });
   },
   
   [UserAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    return state.update('users', (users:UserList) =>
-      users.merge(action.payload));
+    //console.log(action);
+    const newUsers: User[] = action.payload;
+    
+    // Immutable.List.merge goes by indexes, replaces items without regard to identity
+    // For now just replace all users instead, but may want to use more granular add/remove
+    // events from Firebase instead of 'value' for better performance.
+    return state.update('users', () => Immutable.List(newUsers.map(u => new UserRecord(u))));
   },
   
   [UserAction.Auth]: (state:IRecord<AppState>, action:Action) => {

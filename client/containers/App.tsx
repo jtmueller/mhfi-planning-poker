@@ -3,33 +3,31 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as React from 'react';
-import { Paper } from 'material-ui';
 
-import Header from '../components/Header';
 import MainSection from '../components/MainSection';
 import * as PokerActions from '../actions/pokerActions';
 import { IRecord, AppState } from '../models/pokerModels';
 
 interface AppProps {
-  state?: AppState;
+  appState?: AppState;
   dispatch?: Redux.Dispatch;
 }
 
 class App extends React.Component<AppProps, any> {
   render() {
-    const { state, dispatch } = this.props;
+    const { appState, dispatch } = this.props;
     const actions = bindActionCreators(PokerActions, dispatch);
 
     return (
-      <Paper zDepth={1} style={{margin:50, padding:20}}>
+      <div style={{ marginLeft:'20%', marginRight:'20%', marginTop:15 }}>
         <MainSection
-          state={state}
-          actions={actions}/>
-      </Paper>
+          appState={appState}
+          actions={actions} />
+      </div>
     );
   }
 }
 
-const mapStateToProps = state => ({ state: state.state });
+const mapStateToProps = state => ({ appState: state.state });
 
 export default connect(mapStateToProps)(App);

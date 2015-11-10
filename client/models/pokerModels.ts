@@ -27,11 +27,12 @@ export interface Session {
 }
 const defaultSession: Session = { 
   sessionId: '', name:'', desc:'',
+  adminUser: '',
   lastUpdated: new Date()
 };
 /// Instantiating this constructor generates an immutable Session record wrapper.
 export const SessionRecord = Immutable.Record<Session>(defaultSession, "Session");
-export type SessionNames = Immutable.List<IRecord<{ sessionId:string, name:string }>>;
+export type SessionNames = Immutable.List<IRecord<{ sessionId:string, name:string, desc:string }>>;
 
 export interface AppState {
   currentUser: IRecord<User>;

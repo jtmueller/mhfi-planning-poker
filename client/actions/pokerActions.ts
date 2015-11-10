@@ -32,47 +32,43 @@ const dbRoot = new Firebase('https://mhfi-poker.firebaseio.com/');
 const sessions = dbRoot.child('sessions');
 const users = dbRoot.child('users');
 
-dbRoot.authWithOAuthPopup('google', (error, authData) => {
-  if (error) {
-    console.error('Authentication Error', error);
+function handleAuth(authData) {
+  let { displayName, profileImageURL } = authData[authData.provider];
+  store.dispatch({
+    type: UserAction.Auth,
+    payload: {
+      userId: authData.uid,
+      name: displayName,
+      avatarUrl: profileImageURL
+    }
+  });
+}
+
+setTimeout(() => {
+  let auth = dbRoot.getAuth();
+  if (auth) {
+    handleAuth(auth);
   }
   else {
-    console.log('Authenticated: ', authData);
-    let { displayName, profileImageURL } = authData[authData.provider];
-    store.dispatch({
-      type: UserAction.Auth,
-      payload: {
-        userId: authData.uid,
-        name: displayName,
-        avatarUrl: profileImageURL
+    dbRoot.authWithOAuthPopup('google', (error, authData) => {
+      if (error) {
+        console.error('Authentication Error', error);
+      }
+      else {
+        //console.log('Authenticated: ', authData);
+        handleAuth(authData)
       }
     });
   }
-});
+}, 10);
 
 sessions.on('value', snapshot => {
+  let value = snapshot.val();
   store.dispatch({
     type: SessionAction.ListChange,
-    payload: snapshot.val()
+    payload: value ? Object.keys(value).map(k => value[k]) : []
   });
 });
-
-const addSession = createAction<Session>(
-  SessionAction.Add,
-  (name:string, desc:string, userId:string) => {
-    var newRef = sessions.push();
-    
-    const session: Session = {
-      sessionId: newRef.key(),
-      name, desc,
-      lastUpdated: new Date(),
-      adminUser: userId
-    };
-    
-    newRef.set(session);
-    return session;
-  }
-);
 
 const editSession = createAction<Session>(
   SessionAction.Change,
@@ -95,10 +91,13 @@ const removeSession = createAction(
   }
 );
 
-const joinSession = (sessionId:string, userId:string, name: string) =>
+const joinSession = (sessionId:string, user:IRecord<User>) =>
   (dispatch: Dispatcher) => {
-    var sessionUsers = users.child(sessionId);
-    sessionUsers.update({ [userId]: { name } });
+    const sessionUsers = users.child(sessionId);
+    let userData = {
+      [user.userId]: user.toJS()
+    };
+    sessionUsers.update(userData);
     
     sessions.child(sessionId).once('value', snapshot => {
       dispatch({
@@ -113,18 +112,41 @@ const joinSession = (sessionId:string, userId:string, name: string) =>
         payload: snapshot.val()
       });
     });
-      
+    
     sessionUsers.on('value', snapshot => {
+      let value = snapshot.val();
       dispatch({
         type: UserAction.ListChange,
-        payload: snapshot.val()
+        payload: value ? Object.keys(value).map(k => value[k]) : []
       });
     });
     
     window.onbeforeunload = e => {
-      sessionUsers.child(userId).remove();
+      sessionUsers.child(user.userId).remove();
     };
   };
+  
+const addSession = (name:string, desc:string, user:IRecord<User>) =>
+  (dispatch: Dispatcher) => {
+    var newRef = sessions.push();
+    
+    const session: Session = {
+      sessionId: newRef.key(),
+      name, desc,
+      lastUpdated: new Date(),
+      adminUser: user.userId
+    };
+    
+    newRef.set(session, (error) => {
+      if (error) {
+        console.error(error);
+      }
+      else {
+        joinSession(session.sessionId, user)(dispatch);
+      }
+    });
+  };
+
 
 const leaveSession = createAction(
   SessionAction.Leave,
