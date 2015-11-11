@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {
   Panel, Well, ListGroup, ListGroupItem,
-  Glyphicon, Badge, Input, Button, ButtonToolbar, Modal
+  Glyphicon, Badge, Input, Button, DropdownButton, MenuItem, ButtonToolbar, Modal
 } from 'react-bootstrap';
 
 import { IRecord, AppState, User } from '../models/pokerModels';
@@ -83,13 +83,24 @@ class MainSection extends React.Component<MainSectionProps, any> {
     this.setState({ removeSessionDialogVisible: true });
   }
   
+  private adminDDBSelect(eventKey: string) {
+    switch (eventKey) {
+      case "remove":
+        this.showRemoveSessionDialog()
+        break;
+    
+      default:
+        break;
+    }
+  }
+  
   private renderFooter() {
     const { currentSession, currentUser } = this.props.appState;
     const { leaveSession } = this.props.actions;
     let isAdmin = currentSession.adminUser === currentUser.userId;
     
     let removeSessionDialog = 
-      <Modal key={2} show={this.state.removeSessionDialogVisible} onHide={() => this.closeRemoveSessionDialog()}>
+      <Modal key={2} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={() => this.closeRemoveSessionDialog()}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Session?</Modal.Title>
         </Modal.Header>
@@ -104,14 +115,17 @@ class MainSection extends React.Component<MainSectionProps, any> {
     
     return [
       <ButtonToolbar key={0} className="pull-right">
-        { isAdmin ? [
-          <Button key="remove" bsStyle="link" bsSize="small" onClick={() => this.showRemoveSessionDialog()}>Remove Session</Button>,
-          <Button key="reveal" bsStyle="success" bsSize="small">Reveal Votes</Button>,
-          <Button key="clear" bsStyle="danger" bsSize="small">Clear Votes</Button> 
-        ] : [] }
         <Button bsSize="small" onClick={() => leaveSession(currentSession.sessionId, currentUser.userId)}>
           Leave Session
         </Button>
+        { isAdmin ? [
+          <DropdownButton bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.adminDDBSelect(eventKey)}>
+            <MenuItem eventKey="reveal">Reveal Votes</MenuItem>
+            <MenuItem eventKey="clear">Clear Votes</MenuItem>
+            <MenuItem divider />
+            <MenuItem eventKey="remove">Remove Session</MenuItem>
+          </DropdownButton> 
+        ] : [] }
       </ButtonToolbar>,
       <div key={1} className="clearfix" />,
       removeSessionDialog
