@@ -119,7 +119,7 @@ class MainSection extends React.Component<MainSectionProps, any> {
           Leave Session
         </Button>
         { isAdmin ? [
-          <DropdownButton bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.adminDDBSelect(eventKey)}>
+          <DropdownButton key={2} bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.adminDDBSelect(eventKey)}>
             <MenuItem eventKey="reveal">Reveal Votes</MenuItem>
             <MenuItem eventKey="clear">Clear Votes</MenuItem>
             <MenuItem divider />
