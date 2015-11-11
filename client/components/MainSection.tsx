@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {
   Panel, Well, ListGroup, ListGroupItem,
-  Glyphicon, Badge, Input, Button, ButtonToolbar
+  Glyphicon, Badge, Input, Button, ButtonToolbar, Modal
 } from 'react-bootstrap';
 
 import { IRecord, AppState, User } from '../models/pokerModels';
@@ -20,6 +20,10 @@ class MainSection extends React.Component<MainSectionProps, any> {
     super(props, context);
     this.handleDescChange = this.handleDescChange.bind(this);
   }
+  
+  state = {
+    removeSessionDialogVisible: false
+  } 
   
   // shouldComponentUpdate(nextProps: MainSectionProps, nextState) {
   //   return this.props.appState !== nextProps.appState; 
@@ -62,14 +66,46 @@ class MainSection extends React.Component<MainSectionProps, any> {
     );
   }
   
+  private removeSession() {
+      const { currentSession, currentUser, users } = this.props.appState;
+      const { leaveSession, removeSession } = this.props.actions;
+      users.toJS().forEach((u:User) =>
+        leaveSession(currentSession.sessionId, u.userId));
+      removeSession(currentSession.sessionId);
+      this.closeRemoveSessionDialog();
+  }
+  
+  private closeRemoveSessionDialog() {
+    this.setState({ removeSessionDialogVisible: false });
+  }
+  
+  private showRemoveSessionDialog() {
+    this.setState({ removeSessionDialogVisible: true });
+  }
+  
   private renderFooter() {
     const { currentSession, currentUser } = this.props.appState;
     const { leaveSession } = this.props.actions;
     let isAdmin = currentSession.adminUser === currentUser.userId;
     
+    let removeSessionDialog = 
+      <Modal key={2} show={this.state.removeSessionDialogVisible} onHide={() => this.closeRemoveSessionDialog()}>
+        <Modal.Header closeButton>
+          <Modal.Title>Remove Session?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to remove this session? Any users logged into the room will have a pie thrown in their face.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => this.closeRemoveSessionDialog()}>Cancel</Button>
+          <Button bsStyle="primary" onClick={() => this.removeSession()}>Remove Session</Button>
+        </Modal.Footer>
+      </Modal>
+    
     return [
       <ButtonToolbar key={0} className="pull-right">
         { isAdmin ? [
+          <Button key="remove" bsStyle="link" bsSize="small" onClick={() => this.showRemoveSessionDialog()}>Remove Session</Button>,
           <Button key="reveal" bsStyle="success" bsSize="small">Reveal Votes</Button>,
           <Button key="clear" bsStyle="danger" bsSize="small">Clear Votes</Button> 
         ] : [] }
@@ -77,7 +113,8 @@ class MainSection extends React.Component<MainSectionProps, any> {
           Leave Session
         </Button>
       </ButtonToolbar>,
-      <div key={1} className="clearfix" />
+      <div key={1} className="clearfix" />,
+      removeSessionDialog
     ];
   }
   
