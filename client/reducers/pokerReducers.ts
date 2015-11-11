@@ -30,11 +30,11 @@ export default handleActions<AppState>({
     return state.withMutations(mutable => {
       mutable.update('sessionNames', (sns:SessionNames) => 
         sns.map(sn => 
-          sn.sessionId === session.sessionId
+          session && sn.sessionId === session.sessionId
             ? sn.merge(session) : sn
         ).toList());
         
-      if (state.currentSession.sessionId === session.sessionId) {
+      if (session && state.currentSession.sessionId === session.sessionId) {
         mutable.update('currentSession', (curSession:IRecord<Session>) =>
           curSession.merge(session));
       }
