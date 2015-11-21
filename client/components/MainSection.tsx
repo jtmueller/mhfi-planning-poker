@@ -21,18 +21,18 @@ interface MainSesionState {
 }
 
 class MainSection extends React.Component<MainSectionProps, MainSesionState> {
+  state = {
+    removeSessionDialogVisible: false
+  };
+  
   constructor(props, context) {
     super(props, context);
-    
-    this.setState({
-      removeSessionDialogVisible: false
-    });
-    
     this.handleDescChange = this.handleDescChange.bind(this);
   }
   
   shouldComponentUpdate(nextProps: MainSectionProps, nextState) {
-    return this.props.appState !== nextProps.appState; 
+    return this.props.appState !== nextProps.appState ||
+      this.state.removeSessionDialogVisible !== nextState.removeSessionDialogVisible; 
   }
   
   private handleDescChange(e) {

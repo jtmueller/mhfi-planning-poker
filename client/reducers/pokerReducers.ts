@@ -44,8 +44,16 @@ export default handleActions<AppState>({
   
   [SessionAction.Remove]: (state:IRecord<AppState>, action:Action) => {
     const sessionId: string = action.payload;
-    return state.update('sessionNames', (sns:SessionNames) =>
-       sns.filter(x => x.sessionId !== sessionId).toList());
+    // return state.update('sessionNames', (sns:SessionNames) =>
+    //    sns.filter(x => x.sessionId !== sessionId).toList());
+    return state.withMutations(mutable => {
+      mutable.update('sessionNames', (sns:SessionNames) =>
+        sns.filter(x => x.sessionId !== sessionId).toList());
+      
+      if (state.currentSession.sessionId === sessionId) {
+        mutable.update('currentSession', () => new SessionRecord());
+      }
+    });
   },
   
   [SessionAction.ListChange]: (state:IRecord<AppState>, action:Action) => {

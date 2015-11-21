@@ -3,6 +3,9 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as React from 'react';
+import {
+  Grid, Row, Col
+} from 'react-bootstrap';
 
 import MainSection from '../components/MainSection';
 import * as PokerActions from '../actions/pokerActions';
@@ -19,10 +22,17 @@ class App extends React.Component<AppProps, any> {
     const actions = bindActionCreators(PokerActions, dispatch);
 
     return (
-      <div style={{ marginLeft:'20%', marginRight:'20%', marginTop:15 }}>
-        <MainSection
-          appState={appState}
-          actions={actions} />
+      <div style={{ marginTop: 10 }}>
+        <Grid>
+          <Row>
+            <Col xsOffset={1} smOffset={2} mdOffset={2}
+              xs={10} sm={8} md={8}>
+            <MainSection
+              appState={appState}
+              actions={actions} />
+            </Col> 
+          </Row>
+        </Grid>
       </div>
     );
   }
