@@ -3,7 +3,8 @@
 import * as React from 'react';
 import {
   Panel, Well, ListGroup, ListGroupItem,
-  Glyphicon, Badge, Input, Button, DropdownButton, MenuItem, ButtonToolbar, Modal
+  Glyphicon, Badge, Input, Button, DropdownButton, 
+  MenuItem, ButtonToolbar, Modal
 } from 'react-bootstrap';
 
 import { IRecord, AppState, User } from '../models/pokerModels';
@@ -15,19 +16,24 @@ interface MainSectionProps {
   actions: any;
 }
 
-class MainSection extends React.Component<MainSectionProps, any> {
+interface MainSesionState {
+  removeSessionDialogVisible: boolean;
+}
+
+class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   constructor(props, context) {
     super(props, context);
+    
+    this.setState({
+      removeSessionDialogVisible: false
+    });
+    
     this.handleDescChange = this.handleDescChange.bind(this);
   }
   
-  state = {
-    removeSessionDialogVisible: false
-  } 
-  
-  // shouldComponentUpdate(nextProps: MainSectionProps, nextState) {
-  //   return this.props.appState !== nextProps.appState; 
-  // }
+  shouldComponentUpdate(nextProps: MainSectionProps, nextState) {
+    return this.props.appState !== nextProps.appState; 
+  }
   
   private handleDescChange(e) {
     const { sessionId, name } = this.props.appState.currentSession;
@@ -67,10 +73,8 @@ class MainSection extends React.Component<MainSectionProps, any> {
   }
   
   private removeSession() {
-      const { currentSession, currentUser, users } = this.props.appState;
-      const { leaveSession, removeSession } = this.props.actions;
-      users.toJS().forEach((u:User) =>
-        leaveSession(currentSession.sessionId, u.userId));
+      const { currentSession } = this.props.appState;
+      const { removeSession } = this.props.actions;
       removeSession(currentSession.sessionId);
       this.closeRemoveSessionDialog();
   }
@@ -83,23 +87,22 @@ class MainSection extends React.Component<MainSectionProps, any> {
     this.setState({ removeSessionDialogVisible: true });
   }
   
-  private adminDDBSelect(eventKey: string) {
+  private handleAdminSelect(eventKey: string) {
     switch (eventKey) {
-      case "remove":
-        this.showRemoveSessionDialog()
+      case 'remove':
+        this.showRemoveSessionDialog();
         break;
     
-      default:
+      case 'reveal':
+        break;
+        
+      case 'clear':
         break;
     }
   }
   
-  private renderFooter() {
-    const { currentSession, currentUser } = this.props.appState;
-    const { leaveSession } = this.props.actions;
-    let isAdmin = currentSession.adminUser === currentUser.userId;
-    
-    let removeSessionDialog = 
+  private renderRemoveDialog() {
+    return (
       <Modal key={2} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={() => this.closeRemoveSessionDialog()}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Session?</Modal.Title>
@@ -112,23 +115,30 @@ class MainSection extends React.Component<MainSectionProps, any> {
           <Button bsStyle="primary" onClick={() => this.removeSession()}>Remove Session</Button>
         </Modal.Footer>
       </Modal>
-    
+    );
+  }
+  
+  private renderFooter() {
+    const { currentSession, currentUser } = this.props.appState;
+    const { leaveSession } = this.props.actions;
+    let isAdmin = currentSession.adminUser === currentUser.userId;
+        
     return [
       <ButtonToolbar key={0} className="pull-right">
         <Button bsSize="small" onClick={() => leaveSession(currentSession.sessionId, currentUser.userId)}>
           Leave Session
         </Button>
-        { isAdmin ? [
-          <DropdownButton key={2} bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.adminDDBSelect(eventKey)}>
+        { isAdmin ?
+          <DropdownButton key={2} bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.handleAdminSelect(eventKey)}>
             <MenuItem eventKey="reveal">Reveal Votes</MenuItem>
             <MenuItem eventKey="clear">Clear Votes</MenuItem>
             <MenuItem divider />
             <MenuItem eventKey="remove">Remove Session</MenuItem>
           </DropdownButton> 
-        ] : [] }
+          : null }
       </ButtonToolbar>,
       <div key={1} className="clearfix" />,
-      removeSessionDialog
+      this.renderRemoveDialog()
     ];
   }
   
@@ -151,7 +161,7 @@ class MainSection extends React.Component<MainSectionProps, any> {
     if (!currentUser.userId) {
       return (
         <Well>
-          Please sign in: &nbsp;
+          <span style={{ marginRight: 10 }}>Please sign in:</span> 
           <Button bsStyle="danger" onClick={login}>Google</Button>
         </Well>
       );

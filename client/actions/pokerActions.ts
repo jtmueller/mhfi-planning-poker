@@ -87,6 +87,7 @@ const editSession = createAction<Session>(
 const removeSession = createAction(
   SessionAction.Remove,
   (sessionId:string) => {
+    users.child(sessionId).remove();
     sessions.child(sessionId).remove();
     return sessionId;
   }

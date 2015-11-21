@@ -32,7 +32,8 @@ export default handleActions<AppState>({
         sns.map(sn => 
           session && sn.sessionId === session.sessionId
             ? sn.merge(session) : sn
-        ).toList());
+        ).toList()
+      );
         
       if (session && state.currentSession.sessionId === session.sessionId) {
         mutable.update('currentSession', (curSession:IRecord<Session>) =>
@@ -48,7 +49,6 @@ export default handleActions<AppState>({
   },
   
   [SessionAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    //console.log(action);
     const newSessions: Session[] = action.payload;
     
     // Immutable.List.merge goes by indexes, replaces items without regard to identity
@@ -58,7 +58,6 @@ export default handleActions<AppState>({
   },
   
   [SessionAction.Join]: (state:IRecord<AppState>, action:Action) => {
-    //console.log(action);
     return state.update('currentSession', (curSession:IRecord<Session>) =>
       curSession.merge(action.payload));
   },
@@ -71,17 +70,15 @@ export default handleActions<AppState>({
   },
   
   [UserAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    //console.log(action);
     const newUsers: User[] = action.payload;
     
-    if (newUsers.some((value: User, index: number, array: User[]) => {
-      return value.userId === state.currentUser.userId
-    })) {
+    if (newUsers.some(value => value.userId === state.currentUser.userId)) {
       // Immutable.List.merge goes by indexes, replaces items without regard to identity
       // For now just replace all users instead, but may want to use more granular add/remove
       // events from Firebase instead of 'value' for better performance.
       return state.update('users', () => Immutable.List(newUsers.map(u => new UserRecord(u))));
-    } else {
+    } 
+    else {
       // The user list does not contain the current user, so clear the currentSession state property
       return state.withMutations(mutable => {
         mutable.update('currentSession', () => new SessionRecord());
