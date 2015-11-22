@@ -68,7 +68,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
         footer={this.renderFooter()}>
         { this.renderDesc() }
         <ListGroup fill>
-          { users.toJS().map((u:User) => 
+          { users.map((u:User) => 
               <UserListItem key={u.userId} user={u}
                 session={currentSession} setVote={setVote}
                 isCurrentUser={ u.userId === currentUser.userId } />) }
@@ -93,6 +93,8 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   }
   
   private handleAdminSelect(eventKey: string) {
+    const { clearVotes } = this.props.actions;
+    const { currentSession } = this.props.appState;
     switch (eventKey) {
       case 'remove':
         this.showRemoveSessionDialog();
@@ -102,13 +104,14 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
         break;
         
       case 'clear':
+        clearVotes(currentSession.sessionId);
         break;
     }
   }
   
-  private renderRemoveDialog() {
+  private renderRemoveDialog(key: number) {
     return (
-      <Modal key={2} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={this.closeRemoveSessionDialog}>
+      <Modal key={key} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={this.closeRemoveSessionDialog}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Session?</Modal.Title>
         </Modal.Header>
@@ -134,7 +137,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
           Leave Session
         </Button>
         { isAdmin ?
-          <DropdownButton key={1} title="Session Admin" 
+          <DropdownButton key={1} id="sessionAdmin" title="Session Admin" 
             bsSize="small" bsStyle="primary" 
             onSelect={(event, eventKey) => this.handleAdminSelect(eventKey)}>
             <MenuItem eventKey="reveal">Reveal Votes</MenuItem>
@@ -145,7 +148,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
           : null }
       </ButtonToolbar>,
       <div key={2} className="clearfix" />,
-      this.renderRemoveDialog()
+      this.renderRemoveDialog(3)
     ];
   }
   

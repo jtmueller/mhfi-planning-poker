@@ -24,10 +24,11 @@ export interface Session {
   desc: string;
   adminUser?: string;
   lastUpdated: Date;
+  votesRevealed?: boolean;
 }
 const defaultSession: Session = { 
   sessionId: '', name:'', desc:'',
-  adminUser: '',
+  adminUser: '', votesRevealed: false,
   lastUpdated: new Date()
 };
 /// Instantiating this constructor generates an immutable Session record wrapper.

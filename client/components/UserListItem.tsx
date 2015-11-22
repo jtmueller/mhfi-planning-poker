@@ -32,7 +32,7 @@ class UserListItem extends React.Component<UserListItemProps, any> {
   
   private renderVoteButton() {
     return (
-      <DropdownButton title="Vote!" 
+      <DropdownButton title="Vote!" id="vote"
         bsSize="small" bsStyle="warning" pullRight
         onSelect={(event, eventKey) => this.handleVote(eventKey)}>
         { StoryPoints.map(x => 

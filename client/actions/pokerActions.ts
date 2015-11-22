@@ -163,20 +163,25 @@ const leaveSession = createAction(
   }
 );
 
-const setVote = (sessionId: string, userId: string, vote: number) =>
-  (dispatch:Dispatcher) => {
+const setVote = createAction(
+  VoteAction.Set,
+  (sessionId: string, userId: string, vote: number) => {
     users.child(`${sessionId}/${userId}`)
       .update({ vote });
       
-    dispatch({
-      type: VoteAction.Set,
-      payload: { sessionId, userId, vote }
-    })
-  };
+    return { sessionId, userId, vote };
+  }
+);
   
-const clearVotes = (sessionId: string, userId: string) =>
+const clearVotes = (sessionId: string) =>
   (dispatch:Dispatcher) => {
-    // TODO
+    users.child(sessionId)
+      .transaction(current => {
+        Object.keys(current).forEach(key => {
+          current[key].vote = null;
+        });
+        return current;
+      });
   };
 
 export {
