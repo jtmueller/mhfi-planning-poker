@@ -173,8 +173,9 @@ const setVote = createAction(
   }
 );
   
-const clearVotes = (sessionId: string) =>
-  (dispatch:Dispatcher) => {
+const clearVotes = createAction(
+  VoteAction.ClearAll,
+  (sessionId: string) => {
     users.child(sessionId)
       .transaction(current => {
         Object.keys(current).forEach(key => {
@@ -182,7 +183,17 @@ const clearVotes = (sessionId: string) =>
         });
         return current;
       });
-  };
+      
+     sessions.child(sessionId).update({ votesRevealed: false });
+  }
+);
+  
+const revealVotes = createAction(
+  VoteAction.Reveal,
+  (sessionId: string) => {
+    sessions.child(sessionId).update({ votesRevealed: true });
+  }
+);
 
 export {
   login,
@@ -192,5 +203,6 @@ export {
   joinSession,
   leaveSession,
   setVote,
-  clearVotes
+  clearVotes,
+  revealVotes
 }

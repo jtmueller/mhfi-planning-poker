@@ -62,6 +62,9 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   private renderSession() {
     const { currentSession, currentUser, users } = this.props.appState;
     const { setVote } = this.props.actions;
+    
+    let votesRevealed = currentSession.votesRevealed || users.every(u => u.vote != null);
+    
     return (
       <Panel bsStyle="primary" bsSize="md" 
         header={<h3>{currentSession.name}</h3>} 
@@ -69,8 +72,8 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
         { this.renderDesc() }
         <ListGroup fill>
           { users.map((u:User) => 
-              <UserListItem key={u.userId} user={u}
-                session={currentSession} setVote={setVote}
+              <UserListItem key={u.userId} user={u} setVote={setVote}
+                session={currentSession} votesRevealed={votesRevealed}
                 isCurrentUser={ u.userId === currentUser.userId } />) }
         </ListGroup>
       </Panel>
@@ -93,7 +96,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   }
   
   private handleAdminSelect(eventKey: string) {
-    const { clearVotes } = this.props.actions;
+    const { clearVotes, revealVotes } = this.props.actions;
     const { currentSession } = this.props.appState;
     switch (eventKey) {
       case 'remove':
@@ -101,6 +104,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
         break;
     
       case 'reveal':
+        revealVotes(currentSession.sessionId);
         break;
         
       case 'clear':

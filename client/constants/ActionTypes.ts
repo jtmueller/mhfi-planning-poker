@@ -8,7 +8,8 @@ export const SessionAction = {
 };
 export const VoteAction = {
 	Set: 'VOTE_SET',
-	ClearAll: 'VOTES_CLEAR'
+	ClearAll: 'VOTES_CLEAR',
+	Reveal: 'VOTES_REVEAL'
 };
 export const UserAction = {
 	Auth: 'USER_AUTHENTICATE',

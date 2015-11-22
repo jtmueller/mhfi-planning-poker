@@ -15,13 +15,14 @@ interface UserListItemProps {
   user: User;
   isCurrentUser: boolean;
   key?: string;
+  votesRevealed: boolean;
   setVote: (sessionId:string, userId:string, vote:number) => void;
 }
 
 class UserListItem extends React.Component<UserListItemProps, any> {
   private renderVote(user:User) {
-    // TODO: app-state for whether votes have been revealed 
-    if (user.vote == null)
+    const { votesRevealed } = this.props;
+    if (!votesRevealed || user.vote == null)
       return <Badge><Glyphicon glyph="question-sign" /></Badge>;
       
     if (user.vote === -1)
