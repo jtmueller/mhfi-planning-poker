@@ -67,7 +67,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
     
     return (
       <Panel bsStyle="primary" bsSize="md" 
-        header={<h3>{currentSession.name}</h3>} 
+        header={<h3><small>Planning Poker</small><br/><strong>{currentSession.name}</strong></h3>} 
         footer={this.renderFooter()}>
         { this.renderDesc() }
         <ListGroup fill>
@@ -174,10 +174,11 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
     
     if (!currentUser.userId) {
       return (
-        <Well>
+        <Panel bsStyle="primary" bsSize="md" 
+        header={<h3><small>Planning Poker</small><br/><strong>Authentication</strong></h3>}>
           <span style={{ marginRight: 10 }}>Please sign in:</span> 
           <Button bsStyle="danger" onClick={login}>Google</Button>
-        </Well>
+        </Panel>
       );
     }
       

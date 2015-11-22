@@ -75,7 +75,7 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
         
     return (
       <Panel bsStyle="primary" 
-        header={<h3>Join or Create a Session</h3>}
+        header={<h3><small>Planning Poker</small><br /><strong>Join or Create a Session</strong></h3>}
         footer={footerItems}>
         { sessions.length === 0 ? null :
           <ListGroup>

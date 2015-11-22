@@ -22,7 +22,14 @@ interface UserListItemProps {
 class UserListItem extends React.Component<UserListItemProps, any> {
   private renderVote(user:User) {
     const { votesRevealed } = this.props;
-    if (!votesRevealed || user.vote == null)
+    
+    if (!votesRevealed) {
+      return user.vote == null
+        ? <Badge>?</Badge>
+        : <Badge><Glyphicon glyph="ok" /></Badge>;
+    }
+    
+    if (user.vote == null)
       return <Badge>?</Badge>;
       
     if (user.vote === -1)
