@@ -23,7 +23,7 @@ class UserListItem extends React.Component<UserListItemProps, any> {
   private renderVote(user:User) {
     const { votesRevealed } = this.props;
     if (!votesRevealed || user.vote == null)
-      return <Badge><Glyphicon glyph="question-sign" /></Badge>;
+      return <Badge>?</Badge>;
       
     if (user.vote === -1)
       return <Badge><Glyphicon glyph="ban-circle" /></Badge>;
