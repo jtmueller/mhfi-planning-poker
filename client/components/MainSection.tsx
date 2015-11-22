@@ -28,6 +28,8 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   constructor(props, context) {
     super(props, context);
     this.handleDescChange = this.handleDescChange.bind(this);
+    this.closeRemoveSessionDialog = this.closeRemoveSessionDialog.bind(this);
+    this.removeSession = this.removeSession.bind(this);
   }
   
   shouldComponentUpdate(nextProps: MainSectionProps, nextState) {
@@ -59,6 +61,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   
   private renderSession() {
     const { currentSession, currentUser, users } = this.props.appState;
+    const { setVote } = this.props.actions;
     return (
       <Panel bsStyle="primary" bsSize="md" 
         header={<h3>{currentSession.name}</h3>} 
@@ -66,7 +69,9 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
         { this.renderDesc() }
         <ListGroup fill>
           { users.toJS().map((u:User) => 
-              <UserListItem key={u.userId} user={u} isCurrentUser={ u.userId === currentUser.userId } />) }
+              <UserListItem key={u.userId} user={u}
+                session={currentSession} setVote={setVote}
+                isCurrentUser={ u.userId === currentUser.userId } />) }
         </ListGroup>
       </Panel>
     );
@@ -103,7 +108,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
   
   private renderRemoveDialog() {
     return (
-      <Modal key={2} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={() => this.closeRemoveSessionDialog()}>
+      <Modal key={2} bsSize="small" show={this.state.removeSessionDialogVisible} onHide={this.closeRemoveSessionDialog}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Session?</Modal.Title>
         </Modal.Header>
@@ -111,8 +116,8 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
           <p>Are you sure you want to remove this session? Any users logged into the room will have a pie thrown in their face.</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => this.closeRemoveSessionDialog()}>Cancel</Button>
-          <Button bsStyle="primary" onClick={() => this.removeSession()}>Remove Session</Button>
+          <Button onClick={this.closeRemoveSessionDialog}>Cancel</Button>
+          <Button bsStyle="primary" onClick={this.removeSession}>Remove Session</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -129,7 +134,9 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
           Leave Session
         </Button>
         { isAdmin ?
-          <DropdownButton key={2} bsSize="small" bsStyle="primary" title="Session Admin" id="adminDDB" onSelect={(event, eventKey) => this.handleAdminSelect(eventKey)}>
+          <DropdownButton key={1} title="Session Admin" 
+            bsSize="small" bsStyle="primary" 
+            onSelect={(event, eventKey) => this.handleAdminSelect(eventKey)}>
             <MenuItem eventKey="reveal">Reveal Votes</MenuItem>
             <MenuItem eventKey="clear">Clear Votes</MenuItem>
             <MenuItem divider />
@@ -137,7 +144,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
           </DropdownButton> 
           : null }
       </ButtonToolbar>,
-      <div key={1} className="clearfix" />,
+      <div key={2} className="clearfix" />,
       this.renderRemoveDialog()
     ];
   }

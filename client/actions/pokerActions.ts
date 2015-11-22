@@ -170,7 +170,7 @@ const setVote = (sessionId: string, userId: string, vote: number) =>
       
     dispatch({
       type: VoteAction.Set,
-      payload: { userId, vote }
+      payload: { sessionId, userId, vote }
     })
   };
   
