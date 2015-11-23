@@ -227,7 +227,6 @@ const clearVotes = createAction(
           // remove the vote client-side
           current[key].vote = -100;
         });
-        console.log(current);
         return current;
       });
       
