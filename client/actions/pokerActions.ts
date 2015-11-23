@@ -222,15 +222,19 @@ const clearVotes = createAction(
     users.child(sessionId)
       .transaction(current => {
         Object.keys(current).forEach(key => {
-          current[key].vote = null;
+          // used to set this to null, but Firebase
+          // doesn't send null keys, so the merge didn't
+          // remove the vote client-side
+          current[key].vote = -100;
         });
+        console.log(current);
         return current;
       });
       
      sessions.child(sessionId).update({ votesRevealed: false });
   }
 );
-  
+
 const revealVotes = createAction(
   VoteAction.Reveal,
   (sessionId: string) => {

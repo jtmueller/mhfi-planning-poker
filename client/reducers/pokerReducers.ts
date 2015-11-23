@@ -102,7 +102,9 @@ export default handleActions<AppState>({
     let changedUser: User = action.payload;
     
     return state.update('users', (curUsers:UserList) =>
-        curUsers.map(u => u.userId === changedUser.userId ? u.merge(changedUser) : u).toList());
+        curUsers
+          .map(u => u.userId === changedUser.userId ? u.merge(changedUser) : u)
+          .toList());
   },
   
   [UserAction.Remove]: (state:IRecord<AppState>, action:Action) => {

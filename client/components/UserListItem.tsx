@@ -31,12 +31,12 @@ class UserListItem extends React.Component<UserListItemProps, any> {
     const { votesRevealed } = this.props;
     
     if (!votesRevealed) {
-      return user.vote == null
+      return !user.vote || user.vote === -100
         ? <Badge>?</Badge>
         : <Badge><Glyphicon glyph="ok" /></Badge>;
     }
     
-    if (user.vote == null)
+    if (!user.vote || user.vote === -100)
       return <Badge>?</Badge>;
       
     if (user.vote === -1)
@@ -72,7 +72,7 @@ class UserListItem extends React.Component<UserListItemProps, any> {
         <img src={user.avatarUrl} className="img-circle" style={{ width:30, height:30, marginRight:10 }} />
         { user.name }
         <span style={{ float:'right', fontSize:18, marginTop: isCurrentUser ? 0 : 5 }}>
-          { isCurrentUser && user.vote == null
+          { isCurrentUser && (!user.vote || user.vote === -100)
             ? this.renderVoteButton()
             : this.renderVote(user) }
         </span>

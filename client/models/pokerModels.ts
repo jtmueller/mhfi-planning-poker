@@ -12,7 +12,7 @@ export interface User {
 }
 const defaultUser: User = { 
   userId: '', name: '', 
-  avatarUrl: '', vote: null 
+  avatarUrl: '', vote: -100 
 };
 /// Instantiating this constructor generates an immutable User record wrapper.
 export const UserRecord = Immutable.Record<User>(defaultUser, "User");
