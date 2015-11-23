@@ -63,7 +63,7 @@ class MainSection extends React.Component<MainSectionProps, MainSesionState> {
     const { currentSession, currentUser, users } = this.props.appState;
     const { setVote } = this.props.actions;
     
-    let votesRevealed = currentSession.votesRevealed || users.every(u => u.vote != null);
+    let votesRevealed = currentSession.votesRevealed || users.every(u => u.vote && u.vote !== -100);
     
     return (
       <Panel bsStyle="primary" bsSize="md" 

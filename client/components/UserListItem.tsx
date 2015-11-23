@@ -29,7 +29,6 @@ class UserListItem extends React.Component<UserListItemProps, any> {
   
   private renderVote(user:User) {
     const { votesRevealed } = this.props;
-    
     if (!votesRevealed) {
       return !user.vote || user.vote === -100
         ? <Badge>?</Badge>
