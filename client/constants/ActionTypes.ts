@@ -13,7 +13,7 @@ export const VoteAction = {
 };
 export const UserAction = {
 	Auth: 'USER_AUTHENTICATE',
-	ListChange: 'USERLIST_CHANGE',
+	Add: 'USER_ADD',
 	Remove: 'USER_REMOVE',
 	Change: 'USER_CHANGE'
 };

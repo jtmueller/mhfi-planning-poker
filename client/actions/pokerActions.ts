@@ -30,15 +30,41 @@ type Dispatcher = (IAction) => void;
 
 const dbRoot = new Firebase('https://mhfi-poker.firebaseio.com/');
 const sessions = dbRoot.child('sessions');
+const orderedSessions = sessions.orderByChild('name');
 const users = dbRoot.child('users');
+let curUserList: FirebaseQuery;
 
-sessions.on('value', snapshot => {
-  let value = snapshot.val();
+orderedSessions.on('child_added', (snapshot, prevSessionId) => {
+  let session = snapshot.val();
+  //console.log('child_added', session, prevChildKey);
   store.dispatch({
-    type: SessionAction.ListChange,
-    payload: value ? Object.keys(value).map(k => value[k]) : []
+    type: SessionAction.Add,
+    payload: { session, prevSessionId }
+  })
+});
+
+orderedSessions.on('child_changed', (snapshot) => {
+  let session = snapshot.val();
+  //console.log('child_changed', session);
+  store.dispatch({
+    type: SessionAction.Change,
+    payload: snapshot.val()
   });
 });
+
+orderedSessions.on('child_removed', (snapshot) => {
+  let session = snapshot.val();
+  //console.log('child_removed', session);
+  store.dispatch({
+    type: SessionAction.Remove,
+    payload: snapshot.val().sessionId
+  });
+});
+
+// orderedSessions.on('child_moved', (snapshot, prevChildKey) => {
+//   let session = snapshot.val();
+//   console.log('child_moved', session, prevChildKey);
+// });
 
 const login = () =>
   (dispatch:Dispatcher) => {
@@ -96,6 +122,34 @@ const removeSession = createAction(
 const joinSession = (sessionId:string, user:IRecord<User>) =>
   (dispatch: Dispatcher) => {
     const sessionUsers = users.child(sessionId);
+    const orderedUsers = sessionUsers.orderByChild('name');
+    
+    orderedUsers.on('child_added', (snapshot, prevUserId) => {
+      let user = snapshot.val();
+      //console.log('child_added (user)', user);
+      
+      dispatch({
+        type: UserAction.Add,
+        payload: { user, prevUserId }
+      });
+    });
+    
+    orderedUsers.on('child_changed', snapshot => {
+      let user = snapshot.val();
+      dispatch({
+        type: UserAction.Change,
+        payload: user
+      });
+    });
+    
+    orderedUsers.on('child_removed', snapshot => {
+      let removedUser = snapshot.val();
+      dispatch({
+        type: UserAction.Remove,
+        payload: removedUser
+      });
+    });
+    
     let userData = {
       [user.userId]: user.toJS()
     };
@@ -108,21 +162,6 @@ const joinSession = (sessionId:string, user:IRecord<User>) =>
       });
     });
     
-    sessions.child(sessionId).on('value', snapshot => {
-      dispatch({
-        type: SessionAction.Change,
-        payload: snapshot.val()
-      });
-    });
-    
-    sessionUsers.on('value', snapshot => {
-      let value = snapshot.val();
-      dispatch({
-        type: UserAction.ListChange,
-        payload: value ? Object.keys(value).map(k => value[k]) : []
-      });
-    });
-    
     window.onbeforeunload = e => {
       sessionUsers.child(user.userId).remove();
     };
@@ -130,7 +169,7 @@ const joinSession = (sessionId:string, user:IRecord<User>) =>
   
 const addSession = (name:string, desc:string, user:IRecord<User>) =>
   (dispatch: Dispatcher) => {
-    var newRef = sessions.push();
+    let newRef = sessions.push();
     
     const session: Session = {
       sessionId: newRef.key(),
@@ -153,10 +192,14 @@ const addSession = (name:string, desc:string, user:IRecord<User>) =>
 const leaveSession = createAction(
   SessionAction.Leave,
   (sessionId:string, userId:string) => {
-    var sessionUsers = users.child(sessionId);
-    // not sure if this will work when sessionUsers is not the same instance as .on()
-    sessionUsers.off('value');
-    sessions.child(sessionId).off('value');
+    const sessionUsers = users.child(sessionId);
+    const orderedUsers = sessionUsers.orderByChild('name');
+    
+    // this works, even though it's not the same instance that 'on' was called from
+    orderedUsers.off('child_added');
+    orderedUsers.off('child_changed');
+    orderedUsers.off('child_removed');
+    
     window.onbeforeunload = null;
     sessionUsers.child(userId).remove();
     return sessionId;

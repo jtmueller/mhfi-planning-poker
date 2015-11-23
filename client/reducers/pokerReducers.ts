@@ -20,13 +20,24 @@ const initialState: IRecord<AppState> = new AppRecord();
 export default handleActions<AppState>({
   
   [SessionAction.Add]: (state:IRecord<AppState>, action:Action) => {
-    const session: Session = action.payload;
-    return <any>state.update('sessionNames', (sns:SessionNames) => 
-      sns.push(new SessionRecord(session)));
+    const { session, prevSessionId } = action.payload;
+    
+    return <any>state.update('sessionNames', (sns:SessionNames) => {
+      let lastIndex = prevSessionId ? sns.findIndex(sn => sn.sessionId === prevSessionId) : -1;
+      //console.log(lastIndex, session.name);
+      
+      if (lastIndex === -1) {
+        return sns.unshift(new SessionRecord(session));
+      }
+      else {
+        return sns.splice(lastIndex + 1, 0, new SessionRecord(session)).toList();
+      }
+    });
   },
   
   [SessionAction.Change]: (state:IRecord<AppState>, action:Action) => {
     const session: Session = action.payload;
+    
     return state.withMutations(mutable => {
       mutable.update('sessionNames', (sns:SessionNames) => 
         sns.map(sn => 
@@ -44,8 +55,7 @@ export default handleActions<AppState>({
   
   [SessionAction.Remove]: (state:IRecord<AppState>, action:Action) => {
     const sessionId: string = action.payload;
-    // return state.update('sessionNames', (sns:SessionNames) =>
-    //    sns.filter(x => x.sessionId !== sessionId).toList());
+
     return state.withMutations(mutable => {
       mutable.update('sessionNames', (sns:SessionNames) =>
         sns.filter(x => x.sessionId !== sessionId).toList());
@@ -56,42 +66,60 @@ export default handleActions<AppState>({
     });
   },
   
-  [SessionAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    const newSessions: Session[] = action.payload;
-    
-    // Immutable.List.merge goes by indexes, replaces items without regard to identity
-    // For now just replace all sessions instead, but may want to use more granular add/remove
-    // events from Firebase instead of 'value' for better performance.
-    return state.update('sessionNames', () => Immutable.List(newSessions.map(s => new SessionRecord(s))));
-  },
-  
   [SessionAction.Join]: (state:IRecord<AppState>, action:Action) => {
     return state.update('currentSession', (curSession:IRecord<Session>) =>
       curSession.merge(action.payload));
   },
   
   [SessionAction.Leave]: (state:IRecord<AppState>, action:Action) => {
-    return state.withMutations(mutable => {
+    let newState = state.withMutations(mutable => {
       mutable.update('currentSession', () => new SessionRecord());
       mutable.update('users', () => Immutable.List([]));
     });
+    
+    //console.log(SessionAction.Leave, newState.toJS());
+    return newState;
   },
   
-  [UserAction.ListChange]: (state:IRecord<AppState>, action:Action) => {
-    const newUsers: User[] = action.payload;
+  [UserAction.Add]: (state:IRecord<AppState>, action:Action) => {
+    const { user, prevUserId } = action.payload;
+    //console.log(UserAction.Add, user.userId);
     
-    if (newUsers.some(value => value.userId === state.currentUser.userId)) {
-      // Immutable.List.merge goes by indexes, replaces items without regard to identity
-      // For now just replace all users instead, but may want to use more granular add/remove
-      // events from Firebase instead of 'value' for better performance.
-      return state.update('users', () => Immutable.List(newUsers.map(u => new UserRecord(u))));
-    } 
-    else {
-      // The user list does not contain the current user, so clear the currentSession state property
-      return state.withMutations(mutable => {
+    return state.update('users', (curUsers:UserList) => {
+      let lastIndex = prevUserId ? curUsers.findIndex(u => u.userId === prevUserId) : -1;
+      //console.log(lastIndex, session.name);
+      
+      if (lastIndex === -1) {
+        return curUsers.unshift(new UserRecord(user));
+      }
+      else {
+        return curUsers.splice(lastIndex + 1, 0, new UserRecord(user)).toList();
+      }
+    });
+  },
+  
+  [UserAction.Change]: (state:IRecord<AppState>, action:Action) => {
+    let changedUser: User = action.payload;
+    
+    return state.update('users', (curUsers:UserList) =>
+        curUsers.map(u => u.userId === changedUser.userId ? u.merge(changedUser) : u).toList());
+  },
+  
+  [UserAction.Remove]: (state:IRecord<AppState>, action:Action) => {
+    let removedUser: User = action.payload;
+    
+    let newState = state.withMutations(mutable => {
+      mutable.update('users', (curUsers:UserList) =>
+        curUsers.filter(u => u.userId !== removedUser.userId).toList());
+        
+      if (removedUser.userId === state.currentUser.userId) {
+        // if we were removed from a session list, we should not have a current session
         mutable.update('currentSession', () => new SessionRecord());
-      });
-    }
+      }
+    });
+    
+    //console.log(UserAction.Remove, removedUser, newState.toJS());
+    return newState;
   },
   
   [UserAction.Auth]: (state:IRecord<AppState>, action:Action) => {

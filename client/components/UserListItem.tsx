@@ -20,6 +20,13 @@ interface UserListItemProps {
 }
 
 class UserListItem extends React.Component<UserListItemProps, any> {
+  
+  shouldComponentUpdate(nextProps: UserListItemProps, nextState) {
+    return this.props.user !== nextProps.user ||
+      this.props.votesRevealed !== nextProps.votesRevealed ||
+      this.props.session !== nextProps.session;
+  }
+  
   private renderVote(user:User) {
     const { votesRevealed } = this.props;
     

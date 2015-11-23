@@ -33,6 +33,14 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
     
     this.handleDialogSubmit = this.handleDialogSubmit.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+  
+  shouldComponentUpdate(nextProps: SelectorProps, nextState: SelectorState) {
+    return this.state.selectedSession !== nextState.selectedSession ||
+      this.state.newSessionName !== nextState.newSessionName ||
+      this.props.sessions !== nextProps.sessions ||
+      this.props.currentUser !== nextProps.currentUser;
   }
   
   private handleDialogSubmit(e) {
@@ -42,6 +50,14 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
     }
     else if (selectedSession) {
       this.props.joinSession(selectedSession, this.props.currentUser);
+    }
+  }
+  
+  private handleKeyDown(e) {
+    if (e.keyCode === 13) {
+      const { newSessionName } = this.state;
+      this.props.addSession(newSessionName, '', this.props.currentUser);
+      e.preventDefault();
     }
   }
   
@@ -91,7 +107,8 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
           value={newSessionName}
           placeholder="Session Name"
           label="Create a New Session"
-          onChange={this.handleNameChange} />
+          onChange={this.handleNameChange}
+          onKeyDown={e => { if (e.keyCode === 13) this.handleDialogSubmit(e); } } />
       </Panel>
     );
   }
