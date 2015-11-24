@@ -25,11 +25,10 @@ class App extends React.Component<AppProps, any> {
       <div style={{ marginTop: 10 }}>
         <Grid>
           <Row>
-            <Col xsOffset={1} smOffset={2} mdOffset={2}
-              xs={10} sm={8} md={8}>
-            <MainSection
-              appState={appState}
-              actions={actions} />
+            <Col xsOffset={1} smOffset={2} mdOffset={2} xs={10} sm={8} md={8}>
+              <MainSection
+                appState={appState}
+                actions={actions} />
             </Col> 
           </Row>
         </Grid>
