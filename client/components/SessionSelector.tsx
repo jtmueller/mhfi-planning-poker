@@ -7,13 +7,13 @@ import {
 } from 'react-bootstrap';
 
 import {
-  IRecord, Session, User, SessionNames
+  IRecord, Session, User, SessionList
 } from '../models/pokerModels'
 
 interface SelectorProps {
   addSession: (name:string, desc:string, user:User) => Session;
   joinSession: (sessionId:string, user:User) => void;
-  sessions: SessionNames;
+  sessions: SessionList;
   currentUser: IRecord<User>;
 }
 
@@ -77,6 +77,7 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
   }
   
   render() {
+    const { sessions } = this.props;
     const { selectedSession, newSessionName } = this.state;
     
     let footerItems = [     
@@ -87,20 +88,19 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
         bsStyle="primary">Join</Button>,
       <div key={1} className="clearfix" />
     ];
-    let sessions: Session[] = this.props.sessions.toJS();
         
     return (
       <Panel bsStyle="primary" 
         header={<h3><small>Planning Poker</small><br /><strong>Join or Create a Session</strong></h3>}
         footer={footerItems}>
-        { sessions.length === 0 ? null :
+        { sessions.size === 0 ? null :
           <ListGroup>
             { sessions.map(s =>
-              <ListGroupItem key={s.sessionId}
-                active={s.sessionId === selectedSession} 
-                onClick={() => this.selectSession(s.sessionId)}>
-                { s.name }
-              </ListGroupItem>) }
+                <ListGroupItem key={s.sessionId}
+                  active={s.sessionId === selectedSession} 
+                  onClick={() => this.selectSession(s.sessionId)}>
+                  { s.name }
+                </ListGroupItem>) }
           </ListGroup> }
         <Input
           type="text"
@@ -108,7 +108,7 @@ class SessionSelector extends React.Component<SelectorProps, SelectorState> {
           placeholder="Session Name"
           label="Create a New Session"
           onChange={this.handleNameChange}
-          onKeyDown={e => { if (e.keyCode === 13) this.handleDialogSubmit(e); } } />
+          onKeyDown={this.handleKeyDown} />
       </Panel>
     );
   }

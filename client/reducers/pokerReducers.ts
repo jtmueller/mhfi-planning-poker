@@ -6,7 +6,7 @@ import * as Immutable from 'immutable';
 import { 
   IRecord, User, Session, AppState,
   UserRecord, SessionRecord, AppRecord,
-  SessionNames, UserList
+  SessionList, UserList
 } from '../models/pokerModels';
 
 import { 
@@ -22,7 +22,7 @@ export default handleActions<AppState>({
   [SessionAction.Add]: (state:IRecord<AppState>, action:Action) => {
     const { session, prevSessionId } = action.payload;
     
-    return <any>state.update('sessionNames', (sns:SessionNames) => {
+    return <any>state.update('sessions', (sns:SessionList) => {
       let lastIndex = prevSessionId ? sns.findIndex(sn => sn.sessionId === prevSessionId) : -1;
       //console.log(lastIndex, session.name);
       
@@ -39,7 +39,7 @@ export default handleActions<AppState>({
     const session: Session = action.payload;
     
     return state.withMutations(mutable => {
-      mutable.update('sessionNames', (sns:SessionNames) => 
+      mutable.update('sessions', (sns:SessionList) => 
         sns.map(sn => 
           session && sn.sessionId === session.sessionId
             ? sn.merge(session) : sn
@@ -57,7 +57,7 @@ export default handleActions<AppState>({
     const sessionId: string = action.payload;
 
     return state.withMutations(mutable => {
-      mutable.update('sessionNames', (sns:SessionNames) =>
+      mutable.update('sessions', (sns:SessionList) =>
         sns.filter(x => x.sessionId !== sessionId).toList());
       
       if (state.currentSession.sessionId === sessionId) {
