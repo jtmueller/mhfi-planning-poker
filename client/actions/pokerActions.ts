@@ -150,10 +150,18 @@ const joinSession = (sessionId:string, user:IRecord<User>) =>
       });
     });
     
-    let userData = {
-      [user.userId]: user.toJS()
-    };
-    sessionUsers.update(userData);
+    sessionUsers.once('value', snapshot => {
+      if (!snapshot.exists()) {
+        // this user is the first one into an empty session, so make them an adminUser
+        sessions.child(sessionId).update({ adminUser: user.userId });
+      }
+      
+      // either way, add the user to the session
+      let userData = {
+        [user.userId]: user.toJS()
+      };
+      sessionUsers.update(userData);
+    });
     
     sessions.child(sessionId).once('value', snapshot => {
       dispatch({
