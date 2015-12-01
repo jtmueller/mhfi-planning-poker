@@ -1,4 +1,5 @@
 /// <reference path="../../typings/tsd.d.ts" />
+"use strict";
 
 // TODO: React-Router + integration with redux?
 // https://github.com/rackt/redux/issues/291

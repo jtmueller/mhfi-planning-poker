@@ -1,4 +1,5 @@
 /// <reference path="../../typings/tsd.d.ts" />
+"use strict";
 
 import { handleActions, Action } from 'redux-actions';
 import * as Immutable from 'immutable';
