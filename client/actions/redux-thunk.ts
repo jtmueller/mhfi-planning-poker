@@ -1,8 +1,7 @@
 'use strict';
 
 export default function thunkMiddleware(_ref) {
-  var dispatch = _ref.dispatch;
-  var getState = _ref.getState;
+  let { dispatch, getState } = _ref;
 
   return function (next) {
     return function (action) {
