@@ -28,6 +28,44 @@ class UserListItem extends React.Component<UserListItemProps, any> {
       this.props.session !== nextProps.session;
   }
   
+  private badgeStyle(vote: number) {
+    let backgroundColor = '';
+    let color = '';
+    switch (vote) {
+      case 1:
+        backgroundColor = '#4dd0e1';
+        break;
+      case 2:
+        backgroundColor = '#4d6bcac';
+        break;
+      case 3:
+        backgroundColor = '#81C784';
+        break;
+      case 5:
+        backgroundColor = '#DCE775';
+        color = 'slategray';
+        break;
+      case 8:
+        backgroundColor = '#FFF176';
+        color = 'slategray';
+        break;
+      case 13:
+        backgroundColor = '#FFC107';
+        break;
+      case 20:
+        backgroundColor = '#FFB74D';
+        break;
+      case 40:
+        backgroundColor = '#F57C00';
+        break;
+      case 100:
+        backgroundColor = '#f44336';
+        break;
+    }
+    
+    return { backgroundColor, color };
+  }
+  
   private renderVote(user:User) {
     const { votesRevealed } = this.props;
     if (!votesRevealed) {
@@ -42,7 +80,7 @@ class UserListItem extends React.Component<UserListItemProps, any> {
     if (user.vote === -1)
       return <Badge><Glyphicon glyph="ban-circle" /></Badge>;
     
-    return <Badge>{user.vote}</Badge>
+    return <span className="badge" style={this.badgeStyle(user.vote)}>{user.vote}</span>;
   }
   
   private renderVoteButton() {
@@ -54,7 +92,7 @@ class UserListItem extends React.Component<UserListItemProps, any> {
             <MenuItem key={x} eventKey={x}>
               { x === -1 
                 ? <Badge><Glyphicon glyph="ban-circle" /></Badge> 
-                : <Badge>{x}</Badge> }
+                : <span className="badge" style={this.badgeStyle(x)}>{x}</span> }
             </MenuItem>) }
       </DropdownButton> 
     );

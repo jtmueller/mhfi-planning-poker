@@ -49,7 +49,7 @@ class SessionPanel extends React.Component<SessionPanelProps, any> {
       );
     }
     
-    return <span>{currentSession.desc}</span>;
+    return <span style={{ whiteSpace: 'pre-wrap' }}>{currentSession.desc}</span>;
   }
   
   private renderFooter() {
